@@ -1,4 +1,5 @@
-var db = require('../db');
+// I changed the connection to include a '/index.js'
+var db = require('../db/index.js');
 
 module.exports = {
   messages: {
