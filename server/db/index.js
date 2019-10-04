@@ -6,12 +6,11 @@ var mysql = require('mysql');
 
 var connection = mysql.createConnection({
   user: 'root',
-  // Note sure if this should just be commented out or if something needs to be input here
-  // password: "",
+  password: '',
   database: 'chat'
 });
 
 //This line is included because I see the .connect() in the test file
 connection.connect();
 
-exports.connection = connection;
+module.exports.connection = connection;
