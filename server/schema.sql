@@ -1,5 +1,7 @@
+-- can have an automatic drop here instead of doing in the terminal
+-- DROP DATABASE chat;
+-- use command: drop to delete database
 CREATE DATABASE chat;
--- use command: drop
 
 USE chat;
 
@@ -12,31 +14,36 @@ USE chat;
 -- WHERE FOREIGN KEY SYNTAX:
 -- FOREIGN KEY (col_name,...) REFERENCES tbl_name (col_name,...)
 
--- insert into rooms value (1, 'lobby');
---                          id, room_name
+-- EX:
+-- insert into rooms (room_name) value ('lobby'); -> will autoincrement ids
+
 CREATE TABLE rooms (
-  id INT,
+  id INT NOT NULL AUTO_INCREMENT,
   room_name CHAR(25),
   primary key (id)
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE users (
-  id INT,
+  id INT NOT NULL AUTO_INCREMENT,
   userName CHAR(20),
   primary key (id)
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE messages (
   /* Describe your table here.*/
-  id INT,
+  id INT NOT NULL AUTO_INCREMENT,
   message_text VARCHAR(100),
   userName INT,
   -- the user is linked to the users table
   room INT,
-  foreign key (userName) references users(id),
-  foreign key (room) references rooms(id),
+  foreign key (userName)
+    references users(id)
+    ON DELETE CASCADE,
+  foreign key (room)
+    references rooms(id)
+    ON DELETE CASCADE,
   primary key (id)
-);
+) ENGINE = InnoDB;
 
 /* Create other tables and define schemas for them here! */
 
