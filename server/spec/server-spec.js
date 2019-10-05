@@ -16,11 +16,13 @@ describe('Persistent Node Chat Server', function() {
     });
     dbConnection.connect();
 
-    var tablename = 'messages'; // TODO: fill this out
+    dbConnection.query('SET FOREIGN_KEY_CHECKS = 0');
+    var tablenames = ['messages', 'rooms', 'users']; // TODO: fill this out
 
-    /* Empty the db table before each test so that multiple tests
-     * (or repeated runs of the tests) won't screw each other up: */
-    dbConnection.query('truncate ' + tablename, done);
+    tablenames.forEach(tablename => {
+      dbConnection.query('truncate ' + tablename);
+    });
+    dbConnection.query('SET FOREIGN_KEY_CHECKS = 1', done);
   });
 
   afterEach(function() {
@@ -50,10 +52,18 @@ describe('Persistent Node Chat Server', function() {
         // TODO: You might have to change this test to get all the data from
         // your message table, since this is schema-dependent.
         var queryString = 'SELECT * FROM messages'; // id, message_text, id - userName (table), id - room (table)
+<<<<<<< HEAD
         var queryArgs = []; // we don't need to pass in any other arguments for this test to pass?
+=======
+        // id, message_text, username, room
+        // messages
+        // 1, 'hey', 1, 1
+        // 2, 'what's up?', 2, 1
+        var queryArgs = []; //why are they empty?
+>>>>>>> f468df0763dc02ed1b1d2c90be21fe4419309bb0
 
         dbConnection.query(queryString, queryArgs, function(err, results) {
-          console.log('queryArgs: ', queryArgs);
+          // console.log('queryArgs: ', queryArgs);
           console.log('results: ', results);
           // Should have one result:
           expect(results.length).to.equal(1);
@@ -69,7 +79,24 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
+<<<<<<< HEAD
     var queryString = "SELECT * FROM messages INNER JOIN rooms ON rooms.id = messages.room"; //insert here
+=======
+    var queryString = '';
+    var queryArgs = [];
+    // insert first into room table
+    dbConnection.query('INSERT INTO rooms (room_name) VALUE ("main")', (err) => {
+      if (err) { throw err; }
+    });
+    dbConnection.query('INSERT INTO users (userName) VALUE ("hudson3836")', (err) => {
+      if (err) { throw err; }
+    });
+    // then query -> insert into messages
+    var queryString = 'INSERT INTO messages (message_text, userName, room) VALUE ("Men like you can never change!", 1, 1)'; //insert here
+    var message_text = 'Men like you can never change!';
+    var room = '(SELECT id FROM rooms where room_name = "main")';
+    //var queryArgs = [message_text, 1];
+>>>>>>> f468df0763dc02ed1b1d2c90be21fe4419309bb0
     var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
@@ -77,15 +104,18 @@ describe('Persistent Node Chat Server', function() {
 
     dbConnection.query(queryString, queryArgs, function(err) {
       if (err) { throw err; }
-
+      // console.log('Didn\'t get an error');
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
+      // controllers -> get
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        // console.log('body: ',body);
         var messageLog = JSON.parse(body);
         expect(messageLog[0].message_text).to.equal('Men like you can never change!');
-        expect(messageLog[0].room).to.equal('main');
+        expect(messageLog[0].room_name).to.equal('main');
         done();
       });
     });
   });
 });
+
