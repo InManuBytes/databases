@@ -50,11 +50,7 @@ describe('Persistent Node Chat Server', function() {
         // TODO: You might have to change this test to get all the data from
         // your message table, since this is schema-dependent.
         var queryString = 'SELECT * FROM messages'; // id, message_text, id - userName (table), id - room (table)
-                                                    // id, message_text, username, room
-        // messages
-        // 1, 'hey', 1, 1
-        // 2, 'what's up?', 2, 1
-        var queryArgs = []; //why are they empty?
+        var queryArgs = []; // we don't need to pass in any other arguments for this test to pass?
 
         dbConnection.query(queryString, queryArgs, function(err, results) {
           console.log('queryArgs: ', queryArgs);
@@ -73,7 +69,7 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-    var queryString = "SELECT * FROM messages INNER JOIN rooms ON room.id = messages.room"; //insert here
+    var queryString = "SELECT * FROM messages INNER JOIN rooms ON rooms.id = messages.room"; //insert here
     var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave

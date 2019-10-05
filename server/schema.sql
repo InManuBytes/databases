@@ -14,6 +14,9 @@ USE chat;
 
 -- insert into rooms value (1, 'lobby');
 --                          id, room_name
+
+  -- // usernames can't be more than 20 characters long
+  -- // roomnames can't be more than 25 characters long
 CREATE TABLE rooms (
   id INT,
   room_name CHAR(25),
