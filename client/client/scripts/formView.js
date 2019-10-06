@@ -12,8 +12,8 @@ var FormView = {
     var text = event.target[0].value; // here we need to sanitize the text
     var message = {
       username: username,
-      text: text,
-      roomname: Rooms.currentRoom()
+      message: text,
+      roomname: (Rooms.currentRoom())
     };
     Parse.create(message, () => {
       Parse.readAll((data) => {

@@ -6,6 +6,7 @@ var App = {
 
   initialize: function() {
     App.username = window.location.search.substr(10);
+    Parse.createUser({username: App.username});
 
     FormView.initialize();
     RoomsView.initialize();
