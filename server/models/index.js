@@ -1,17 +1,44 @@
 var db = require('../db/index.js');
+var Promise = require('bluebird');
 
 module.exports = {
   messages: {
     get: function (callback) {
       // TO DO: only output the columns we need
-      db.connection.query('SELECT * FROM messages INNER JOIN rooms ON rooms.id = messages.room INNER JOIN users ON users.id = messages.userName', function (err, results) {
-        if (err) {
-          callback(err, null);
-        } else {
-          // the client expects DATA => {results: [...results...]}
+      Message.sync()
+        .then(function() {
+          //'SELECT * FROM messages
+          // INNER JOIN rooms
+          //  ON rooms.id = messages.room
+          // INNER JOIN users
+          //  ON users.id = messages.userName'
+          return Message.findAll({
+            include: [{
+            model: Room,
+            required: true,
+            include: [{
+              model: User,
+              required: true
+              }]
+            }]
+          });
+        })
+        .then(function(results) {
           callback(null, {results: results});
-        }
-      });
+        })
+        .catch(function(err) {
+          console.log(err);
+          callback(err, null);
+        });
+      // using mysql connection (see commented out section in db/index.js)
+      // db.connection.query('SELECT * FROM messages INNER JOIN rooms ON rooms.id = messages.room INNER JOIN users ON users.id = messages.userName', function (err, results) {
+      //   if (err) {
+      //     callback(err, null);
+      //   } else {
+      //     // the client expects DATA => {results: [...results...]}
+      //     callback(null, {results: results});
+      //   }
+      // });
     }, // a function which produces all the messages
     //-- insert into rooms value (1, 'lobby');
     post: function (message, callback) {
