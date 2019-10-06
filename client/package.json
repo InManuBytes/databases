@@ -11,7 +11,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "open ./SpecRunner.html"
+    "test": "open ./SpecRunner.html",
+    "start": "live-server ."
   },
   "author": "Hack Reactor <curriculum.team@hackreactor.com>",
   "license": "UNLICENSED"
