@@ -9,7 +9,7 @@ module.exports = {
           console.log(err);
           throw err;
         } else {
-          res.send(results);
+          res.json(results);
         }
       });
     }, // a function which handles a get request for all messages
@@ -19,7 +19,7 @@ module.exports = {
           console.log(err);
           throw err;
         } else {
-          res.send(results); //figure what what to send back since the database just says "OK"
+          res.json(results); //figure what what to send back since the database just says "OK"
         }
       });
       // body -> json object username, room, message_text req.body
@@ -36,7 +36,7 @@ module.exports = {
           throw err;
         } else {
           // check results in the right format JSON
-          res.send(results);
+          res.json(results);
         }
       });
     },
@@ -47,7 +47,7 @@ module.exports = {
         if (err) {
           throw err;
         } else {
-          res.send(results); //send back the username
+          res.json(results); //send back the username
         }
       });
     }
