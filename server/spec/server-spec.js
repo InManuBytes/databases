@@ -48,19 +48,10 @@ describe('Persistent Node Chat Server', function() {
       }, function () {
         // Now if we look in the database, we should find the
         // posted message there.
-
         // TODO: You might have to change this test to get all the data from
         // your message table, since this is schema-dependent.
         var queryString = 'SELECT * FROM messages'; // id, message_text, id - userName (table), id - room (table)
-<<<<<<< HEAD
-        var queryArgs = []; // we don't need to pass in any other arguments for this test to pass?
-=======
-        // id, message_text, username, room
-        // messages
-        // 1, 'hey', 1, 1
-        // 2, 'what's up?', 2, 1
         var queryArgs = []; //why are they empty?
->>>>>>> f468df0763dc02ed1b1d2c90be21fe4419309bb0
 
         dbConnection.query(queryString, queryArgs, function(err, results) {
           // console.log('queryArgs: ', queryArgs);
@@ -79,11 +70,6 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-<<<<<<< HEAD
-    var queryString = "SELECT * FROM messages INNER JOIN rooms ON rooms.id = messages.room"; //insert here
-=======
-    var queryString = '';
-    var queryArgs = [];
     // insert first into room table
     dbConnection.query('INSERT INTO rooms (room_name) VALUE ("main")', (err) => {
       if (err) { throw err; }
@@ -93,10 +79,7 @@ describe('Persistent Node Chat Server', function() {
     });
     // then query -> insert into messages
     var queryString = 'INSERT INTO messages (message_text, userName, room) VALUE ("Men like you can never change!", 1, 1)'; //insert here
-    var message_text = 'Men like you can never change!';
-    var room = '(SELECT id FROM rooms where room_name = "main")';
     //var queryArgs = [message_text, 1];
->>>>>>> f468df0763dc02ed1b1d2c90be21fe4419309bb0
     var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
@@ -111,11 +94,35 @@ describe('Persistent Node Chat Server', function() {
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         // console.log('body: ',body);
         var messageLog = JSON.parse(body);
-        expect(messageLog[0].message_text).to.equal('Men like you can never change!');
-        expect(messageLog[0].room_name).to.equal('main');
+        console.log('messageLog:', messageLog);
+        expect(messageLog.results[0].message_text).to.equal('Men like you can never change!');
+        expect(messageLog.results[0].room_name).to.equal('main');
         done();
       });
     });
   });
-});
 
+  it('should only have one record for each user', function (done) {
+    // make two post requests with the same username
+    request({
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/users',
+      json: { username: 'Valjean' }
+    }, function () {
+      request({
+        method: 'POST',
+        uri: 'http://127.0.0.1:3000/classes/users',
+        json: { username: 'Valjean' }
+      }, function () {
+        var queryString = 'SELECT id FROM users where userName = "Valjean"';
+        var queryArgs = [];
+        // results [{id: 1, userName: hudson3836},{}...]
+        // results [xxx{id:6}]
+        dbConnection.query(queryString, queryArgs, function (error, results) {
+          expect(results.length).to.equal(1);
+          done();
+        });
+      });
+    });
+  });
+});
