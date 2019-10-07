@@ -29,7 +29,7 @@ describe('Persistent Node Chat Server', function() {
     dbConnection.end();
   });
 
-  it('Should insert posted messages to the DB', function(done) {
+  xit('Should insert posted messages to the DB', function(done) {
     // Post the user to the chat server.
     request({
       method: 'POST',
@@ -85,14 +85,16 @@ describe('Persistent Node Chat Server', function() {
     // here depend on the schema you design, so I'll leave
     // them up to you. */
 
+    console.log('query next');
     dbConnection.query(queryString, queryArgs, function(err) {
       if (err) { throw err; }
       // console.log('Didn\'t get an error');
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       // controllers -> get
+      console.log('get request next');
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
-        // console.log('body: ',body);
+        console.log('body: ',body);
         var messageLog = JSON.parse(body);
         console.log('messageLog:', messageLog);
         expect(messageLog.results[0].message_text).to.equal('Men like you can never change!');
@@ -102,7 +104,7 @@ describe('Persistent Node Chat Server', function() {
     });
   });
 
-  it('should only have one record for each user', function (done) {
+  xit('should only have one record for each user', function (done) {
     // make two post requests with the same username
     request({
       method: 'POST',

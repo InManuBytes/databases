@@ -4,14 +4,28 @@ module.exports = {
   messages: {
     get: function (req, res) {
       //console.log('Serving GET request');
-      models.messages.get((err, results) => {
-        if (err) {
-          console.log(err);
-          throw err;
-        } else {
-          res.json(results);
-        }
-      });
+      // Since sequelize "replaces the model", you can just call the functions here
+      Message.findAll({include: [{
+                model: db.User,
+                required: true,
+                // we don't want a nested join because that would imply Rooms -> User relation
+              }, { //we just list them here
+                model: db.Room,
+                required: true
+              }]
+            })
+        .complete((err, results) => {
+          if (err) {
+            console.log(err);
+            throw err;
+          } else {
+            // before we passed this on in the model to reflect what the client expected
+            res.json({results: results});
+          }
+        });
+      // Before, the model handled the err, and allowed us access to results
+      // models.messages.get((err, results) => {
+      // });
     }, // a function which handles a get request for all messages
     post: function (req, res) {
       models.messages.post(req.body, (err, results) => {

@@ -1,24 +1,32 @@
-var Sequelize = require('sequelize')
-var db = new Sequelize('chat', 'root', '')
+var Sequelize = require('sequelize');
+var db = new Sequelize('chat', 'root', '');
 
 var User = db.define('User', {
-  userName: Sequelize.STRING
+  userName: Sequelize.STRING,
 });
 
 var Message = db.define('Message', {
   message_text: Sequelize.STRING,
   userName: Sequelize.INTEGER,
-  room: Sequelize.INTEGER
+  room: Sequelize.INTEGER,
 })
 
 var Room = db.define('Rooms', {
-  room_name: Sequelize.STRING
+  room_name: Sequelize.STRING,
 })
 
 // hasMany will store association key in target
 User.hasMany(Message);
 Room.hasMany(Message);
+// you have to do also make the association the other way:
+// https://sequelize.org/master/manual/associations.html
+Message.belongsTo(Room);
+Message.belongsTo(User);
 
+// you have to do the sync here
+Message.sync();
+User.sync();
+Room.sync();
 
 module.exports.User = User;
 module.exports.Message = Message;
