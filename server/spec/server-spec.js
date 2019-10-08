@@ -12,7 +12,7 @@ describe('Persistent Node Chat Server', function() {
     dbConnection = mysql.createConnection({
       user: 'root',
       password: '', // getting an error here
-      database: 'chat'
+      database: 'chat_sequelize'
     });
     dbConnection.connect();
 
@@ -71,15 +71,18 @@ describe('Persistent Node Chat Server', function() {
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
     // insert first into room table
-    dbConnection.query('INSERT INTO rooms (room_name) VALUE ("main")', (err) => {
+    // tables in sequelize called 'Rooms, Users, Messages'
+    // tables in mysql called 'rooms, users, messages'
+    dbConnection.query('INSERT INTO Rooms (room_name) VALUE ("main")', (err) => {
       if (err) { throw err; }
     });
-    dbConnection.query('INSERT INTO users (userName) VALUE ("hudson3836")', (err) => {
+    dbConnection.query('INSERT INTO Users (userName) VALUE ("hudson3836")', (err) => {
       if (err) { throw err; }
     });
     // then query -> insert into messages
-    var queryString = 'INSERT INTO messages (message_text, userName, room) VALUE ("Men like you can never change!", 1, 1)'; //insert here
-    //var queryArgs = [message_text, 1];
+    // if we're testing with sequelize use columns (message_text, userId, RoomId)
+    // if testing with mysql schume use columnts (message_text, userName, room)
+    var queryString = 'INSERT INTO Messages (message_text, userId, RoomId) VALUE ("Men like you can never change!", 1, 1)'; //insert here
     var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
@@ -87,18 +90,25 @@ describe('Persistent Node Chat Server', function() {
 
     console.log('query next');
     dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
+      if (err) {
+        console.log('query error');
+        throw err; }
       // console.log('Didn\'t get an error');
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       // controllers -> get
       console.log('get request next');
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        if (error){
+          console.log("ERROR:", error);
+        }
         console.log('body: ',body);
         var messageLog = JSON.parse(body);
         console.log('messageLog:', messageLog);
         expect(messageLog.results[0].message_text).to.equal('Men like you can never change!');
-        expect(messageLog.results[0].room_name).to.equal('main');
+        // using sequelize you have to use messageLog.results[0].Room.room_name
+        // using mysql you have to use messageLog.results[0].room_name
+        expect(messageLog.results[0].Room.room_name).to.equal('main');
         done();
       });
     });

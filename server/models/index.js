@@ -1,13 +1,14 @@
 var db = require('../db/index.js');
-var Promise = require('bluebird');
-var Sequelize = require('sequelize')
+// no need here
+// var Promise = require('bluebird');
+// var Sequelize = require('sequelize')
 
 module.exports = {
   messages: {
     get: function (callback) {
       // TO DO: only output the columns we need
       console.log('serving get request');
-      // db.Message.sync() //we have to refer to our functions how we imported them
+      // db.Message.sync() //we have to refer to our functions how we imported them?
       //   // or do separate imports for each one: Message = require(...).Message, User = require(...).User, etc.
       //   .then(function() {
       //     //'SELECT * FROM messages

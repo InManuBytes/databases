@@ -1,11 +1,13 @@
 var models = require('../models');
+var db = require('../db/index.js');
+var bluebird = require('bluebird');
 
 module.exports = {
   messages: {
     get: function (req, res) {
-      //console.log('Serving GET request');
+      console.log('Serving GET request');
       // Since sequelize "replaces the model", you can just call the functions here
-      Message.findAll({include: [{
+      db.Message.findAll({include: [{
                 model: db.User,
                 required: true,
                 // we don't want a nested join because that would imply Rooms -> User relation
@@ -14,14 +16,12 @@ module.exports = {
                 required: true
               }]
             })
-        .complete((err, results) => {
-          if (err) {
-            console.log(err);
-            throw err;
-          } else {
+        .then((results) => {
             // before we passed this on in the model to reflect what the client expected
             res.json({results: results});
-          }
+        })
+        .catch((err) => {
+          throw err;
         });
       // Before, the model handled the err, and allowed us access to results
       // models.messages.get((err, results) => {

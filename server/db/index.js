@@ -1,19 +1,17 @@
 var Sequelize = require('sequelize');
-var db = new Sequelize('chat', 'root', '');
+var db = new Sequelize('chat_sequelize', 'root', '');
 
 var User = db.define('User', {
-  userName: Sequelize.STRING,
-});
-
+  userName: Sequelize.STRING
+}, {timestamps: false});
+// syntax for models .define('title', {unique columns}, {options})
 var Message = db.define('Message', {
-  message_text: Sequelize.STRING,
-  userName: Sequelize.INTEGER,
-  room: Sequelize.INTEGER,
-})
+  message_text: Sequelize.STRING
+}, {timestamps: false});
 
-var Room = db.define('Rooms', {
-  room_name: Sequelize.STRING,
-})
+var Room = db.define('Room', {
+  room_name: Sequelize.STRING
+}, {timestamps: false});
 
 // hasMany will store association key in target
 User.hasMany(Message);
@@ -24,9 +22,17 @@ Message.belongsTo(Room);
 Message.belongsTo(User);
 
 // you have to do the sync here
+// will actually create the tables
 Message.sync();
 User.sync();
 Room.sync();
+// OUTPUT OF SYNC:
+// Executing (default): CREATE TABLE IF NOT EXISTS `Messages` (`id` INTEGER NOT NULL auto_increment , `message_text` VARCHAR(255), `UserId` INTEGER, `RoomId` INTEGER, PRIMARY KEY (`id`), FOREIGN KEY (`UserId`) REFERENCES `Users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE, FOREIGN KEY (`RoomId`) REFERENCES `Rooms` (`id`) ON DELETE SET NULL ON UPDATE CASCADE) ENGINE=InnoDB;
+// Executing (default): CREATE TABLE IF NOT EXISTS `Users` (`id` INTEGER NOT NULL auto_increment , `userName` VARCHAR(255), PRIMARY KEY (`id`)) ENGINE=InnoDB;
+// Executing (default): CREATE TABLE IF NOT EXISTS `Rooms` (`id` INTEGER NOT NULL auto_increment , `room_name` VARCHAR(255), PRIMARY KEY (`id`)) ENGINE=InnoDB;
+// Executing (default): SHOW INDEX FROM `Users`
+// Executing (default): SHOW INDEX FROM `Rooms`
+// Executing (default): SHOW INDEX FROM `Messages`
 
 module.exports.User = User;
 module.exports.Message = Message;
